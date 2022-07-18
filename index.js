@@ -1,5 +1,5 @@
 const express = require( 'express' );
-const { MongoClient, ServerApiVersion } = require( 'mongodb' );
+const { MongoClient, ServerApiVersion, ObjectId } = require( 'mongodb' );
 const cors = require( 'cors' );
 const app = express();
 const port = process.env.PORT || 5000;
@@ -49,7 +49,15 @@ async function run() {
         } );
 
         //use post to get products by ids
-
+        app.post( '/productByKeys', async ( req, res ) => {
+            const keys = req.body;
+            const ids = keys.map( id => ObjectId( id ) );
+            const query = { _id: { $in: ids } };
+            const cursor = productCollection.find( query );
+            const products = await cursor.toArray();
+            console.log( keys );
+            res.send( products );
+        } );
 
 
     }
